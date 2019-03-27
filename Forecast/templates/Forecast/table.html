@@ -1,0 +1,53 @@
+<html>
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'Forecast/style.css' %}">
+<body>
+<h2>My Predictions</h2>
+<table id="my-data-table">
+    <tr id="my-dates-row">
+        <th></th>
+        {% for header in my_headers %}
+            <th>{{ header }}</th>
+        {% endfor %}
+    </tr>
+    <tr id="my-tmax-row">
+        <th>High</th>
+        {% for max in tmax %}
+            <td>{{ max }}</td>
+        {% endfor %}
+    </tr>
+    <tr id="my-tmin-row">
+        <th>Low</th>
+        {% for min in tmin %}
+            <td>{{ min }}</td>
+        {% endfor %}
+    </tr>
+</table>
+<div id="my_chart_div"></div>
+{% if owm_headers %}
+<h2>OpenWeatherMap's Predictions</h2>
+<div style="padding-bottom: 20px"></div>
+<table id="owm-data-table">
+    <tr id="owm-dates-row">
+        <th></th>
+        {% for header in owm_headers %}
+            <th>{{ header }}</th>
+        {% endfor %}
+    </tr>
+    <tr id="owm-tmax-row">
+        <th>High</th>
+        {% for max in owm_tmax %}
+            <td>{{ max }}</td>
+        {% endfor %}
+    </tr>
+    <tr id="owm-tmin-row">
+        <th>Low</th>
+        {% for min in owm_tmin %}
+            <td>{{ min }}</td>
+        {% endfor %}
+    </tr>
+</table>
+<div id="owm_chart_div"></div>
+{% endif %}
+</body>
+</html>

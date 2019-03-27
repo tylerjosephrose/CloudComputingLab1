@@ -1,0 +1,115 @@
+{% load static from staticfiles %}
+<html>
+<head>
+    <title>Forecast</title>
+    <h1>Forecast</h1>
+    <link rel="stylesheet" type="text/css" href="{% static 'Forecast/style.css' %}">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+    <script type="application/javascript" src="https://gstatic.com/charts/loader.js"></script>
+</head>
+<body>
+<form id="post-form" action="{{ table_url }}">
+    {% csrf_token %}
+    {{ form }}
+    <input id="submit-date" type="submit" value="Submit">
+</form>
+<div id="my-forecast"></div>
+</body>
+</html>
+
+<script language="JavaScript">
+    // Load the Visualization API and the corechart package.
+    google.charts.load('current', {'packages':['corechart']});
+
+    $("#submit-date").click(function(event) {
+        event.preventDefault();
+        var monthField = $("#id_date_month")[0];
+        var dayField = $("#id_date_day")[0];
+        var yearField = $("#id_date_year")[0];
+        var month = monthField.options[monthField.selectedIndex].value;
+        var day = dayField.options[dayField.selectedIndex].value;
+        var year = yearField.options[yearField.selectedIndex].value;
+        var date = "" + year + ("0" + month).slice(-2) + ("0" + day).slice(-2);
+        var url = $("#post-form")[0].action;
+        console.log(url + date);
+        $.ajax({
+            url: url + date,
+            success: function (data) {
+                $("#my-forecast").html(data);
+                drawChart()
+            },
+            failure: function(data) {
+                console.log("failure");
+            }
+        });
+    });
+
+    function drawChart() {
+        var myData = new google.visualization.DataTable();
+        myData.addColumn('string', 'Date');
+        myData.addColumn('number', 'High');
+        myData.addColumn({type:'string', role:'annotation'});
+        myData.addColumn('number', 'Low');
+        myData.addColumn({type:'string', role:'annotation'});
+        myData.addRows([
+            [$("#my-dates-row")[0].children[1].innerText, parseFloat($("#my-tmax-row")[0].children[1].innerText.slice(0, -2)), $("#my-tmax-row")[0].children[1].innerText, parseFloat($("#my-tmin-row")[0].children[1].innerText.slice(0, -2)), $("#my-tmin-row")[0].children[1].innerText],
+            [$("#my-dates-row")[0].children[2].innerText, parseFloat($("#my-tmax-row")[0].children[2].innerText.slice(0, -2)), $("#my-tmax-row")[0].children[2].innerText, parseFloat($("#my-tmin-row")[0].children[2].innerText.slice(0, -2)), $("#my-tmin-row")[0].children[2].innerText],
+            [$("#my-dates-row")[0].children[3].innerText, parseFloat($("#my-tmax-row")[0].children[3].innerText.slice(0, -2)), $("#my-tmax-row")[0].children[3].innerText, parseFloat($("#my-tmin-row")[0].children[3].innerText.slice(0, -2)), $("#my-tmin-row")[0].children[3].innerText],
+            [$("#my-dates-row")[0].children[4].innerText, parseFloat($("#my-tmax-row")[0].children[4].innerText.slice(0, -2)), $("#my-tmax-row")[0].children[4].innerText, parseFloat($("#my-tmin-row")[0].children[4].innerText.slice(0, -2)), $("#my-tmin-row")[0].children[4].innerText],
+            [$("#my-dates-row")[0].children[5].innerText, parseFloat($("#my-tmax-row")[0].children[5].innerText.slice(0, -2)), $("#my-tmax-row")[0].children[5].innerText, parseFloat($("#my-tmin-row")[0].children[5].innerText.slice(0, -2)), $("#my-tmin-row")[0].children[5].innerText],
+            [$("#my-dates-row")[0].children[6].innerText, parseFloat($("#my-tmax-row")[0].children[6].innerText.slice(0, -2)), $("#my-tmax-row")[0].children[6].innerText, parseFloat($("#my-tmin-row")[0].children[6].innerText.slice(0, -2)), $("#my-tmin-row")[0].children[6].innerText],
+            [$("#my-dates-row")[0].children[7].innerText, parseFloat($("#my-tmax-row")[0].children[7].innerText.slice(0, -2)), $("#my-tmax-row")[0].children[7].innerText, parseFloat($("#my-tmin-row")[0].children[7].innerText.slice(0, -2)), $("#my-tmin-row")[0].children[7].innerText]
+        ]);
+
+        var myOptions = {
+            title: 'My Forecast',
+            'width': $("#my-data-table")[0].scrollWidth,
+            'height': 300,
+            'backgroundColor': { fill: 'transparent' },
+            curveType: 'function',
+            legend: { position: 'bottom' },
+            series: {
+                0: { color: '#e21914'  },
+                1:  { color: '#1a24e7'  }
+            },
+        };
+
+        var myChart = new google.visualization.LineChart($('#my_chart_div')[0]);
+
+        myChart.draw(myData, myOptions);
+
+
+        // Make the OWM chart
+        var myData = new google.visualization.DataTable();
+        myData.addColumn('string', 'Date');
+        myData.addColumn('number', 'High');
+        myData.addColumn({type:'string', role:'annotation'});
+        myData.addColumn('number', 'Low');
+        myData.addColumn({type:'string', role:'annotation'});
+        myData.addRows([
+            [$("#owm-dates-row")[0].children[1].innerText, parseFloat($("#owm-tmax-row")[0].children[1].innerText.slice(0, -2)), $("#owm-tmax-row")[0].children[1].innerText, parseFloat($("#owm-tmin-row")[0].children[1].innerText.slice(0, -2)), $("#owm-tmin-row")[0].children[1].innerText],
+            [$("#owm-dates-row")[0].children[2].innerText, parseFloat($("#owm-tmax-row")[0].children[2].innerText.slice(0, -2)), $("#owm-tmax-row")[0].children[2].innerText, parseFloat($("#owm-tmin-row")[0].children[2].innerText.slice(0, -2)), $("#owm-tmin-row")[0].children[2].innerText],
+            [$("#owm-dates-row")[0].children[3].innerText, parseFloat($("#owm-tmax-row")[0].children[3].innerText.slice(0, -2)), $("#owm-tmax-row")[0].children[3].innerText, parseFloat($("#owm-tmin-row")[0].children[3].innerText.slice(0, -2)), $("#owm-tmin-row")[0].children[3].innerText],
+            [$("#owm-dates-row")[0].children[4].innerText, parseFloat($("#owm-tmax-row")[0].children[4].innerText.slice(0, -2)), $("#owm-tmax-row")[0].children[4].innerText, parseFloat($("#owm-tmin-row")[0].children[4].innerText.slice(0, -2)), $("#owm-tmin-row")[0].children[4].innerText],
+            [$("#owm-dates-row")[0].children[5].innerText, parseFloat($("#owm-tmax-row")[0].children[5].innerText.slice(0, -2)), $("#owm-tmax-row")[0].children[5].innerText, parseFloat($("#owm-tmin-row")[0].children[5].innerText.slice(0, -2)), $("#owm-tmin-row")[0].children[5].innerText],
+        ]);
+
+        var myOptions = {
+            title: 'OpenWeatherMap Forecast',
+            'width': $("#owm-data-table")[0].scrollWidth,
+            'height': 300,
+            'backgroundColor': { fill: 'transparent' },
+            curveType: 'function',
+            legend: { position: 'bottom' },
+            series: {
+                0: { color: '#e21914'  },
+                1:  { color: '#1a24e7'  }
+            },
+        };
+
+        var myChart = new google.visualization.LineChart($('#owm_chart_div')[0]);
+
+        myChart.draw(myData, myOptions);
+    }
+
+</script>
